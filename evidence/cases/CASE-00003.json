@@ -1,0 +1,570 @@
+{
+  "case": {
+    "case": {
+      "id": 3,
+      "ref": "CASE-00003",
+      "title": "Failures followed by success from 127.208.20.12",
+      "status": "closed",
+      "severity": "high",
+      "verdict": "expected-test",
+      "sensor_id": "lab-sensor-01",
+      "source_ip": "127.208.20.12",
+      "first_activity": "2026-09-22T11:49:00.572422Z",
+      "last_activity": "2026-09-22T11:49:01.034042Z",
+      "created_at": "2026-09-22T11:49:01.037477Z",
+      "updated_at": "2026-09-22T11:50:11.662006Z",
+      "response_decision": "Restricted SSH for the source for 15 minutes, verified, then lifted after testing.",
+      "closure_reason": "Activity matches labtest scenario ssh-guess-then-success in run 20260922T114855Z-666cb1. Detection HLAB-AUTH-003 fired as designed; restriction and verification behaved correctly.",
+      "detection_count": 1,
+      "event_count": 6,
+      "session_ids": [
+        "01a0c8f2-a61a-7047-8518-871bdf64467e",
+        "01a0c8f2-a6b3-71ac-93af-bc9c9282c472",
+        "01a0c8f2-a74d-7359-b18a-f152e851da6b",
+        "01a0c8f2-a7e7-7585-967b-38bf5322f396",
+        "denied-01a0c8f3-6429-76b7-a3e3-361746c4cb27"
+      ],
+      "services": [
+        "ssh"
+      ],
+      "closed_at": "2026-09-22T11:50:11.662006Z"
+    },
+    "detections": [
+      {
+        "id": 5,
+        "rule_id": "HLAB-AUTH-003",
+        "rule_version": 1,
+        "rule_name": "Failures followed by success",
+        "severity": "high",
+        "confidence": "high",
+        "sensor_id": "lab-sensor-01",
+        "source_ip": "127.208.20.12",
+        "session_id": "01a0c8f2-a7e7-7585-967b-38bf5322f396",
+        "service_type": "ssh",
+        "group_key": "lab-sensor-01|127.208.20.12|ssh|labuser",
+        "first_seen": "2026-09-22T11:49:00.572422Z",
+        "last_seen": "2026-09-22T11:49:01.034042Z",
+        "detected_at": "2026-09-22T11:49:01.034042Z",
+        "explanation": "3 rejected logins for account \"labuser\" from 127.208.20.12 to ssh, then an accepted login for the same account at 11:49:01Z. Threshold is 3 failures within 5m0s before the success.",
+        "matched_values": {
+          "auth_mode": "test-credentials",
+          "failures_before_success": 3,
+          "threshold": 3,
+          "username": "labuser",
+          "window": "5m0s"
+        },
+        "mitre": [
+          "T1110.001",
+          "T1078"
+        ],
+        "suppressed_count": 0,
+        "case_id": 3,
+        "evidence": [
+          {
+            "event_id": "01a0c8f2-a61c-7671-be90-c6988d48a4f0",
+            "event_timestamp": "2026-09-22T11:49:00.572422Z",
+            "role": "contributing"
+          },
+          {
+            "event_id": "01a0c8f2-a6b6-7177-859a-7798def533c2",
+            "event_timestamp": "2026-09-22T11:49:00.726096Z",
+            "role": "contributing"
+          },
+          {
+            "event_id": "01a0c8f2-a750-7b4b-a5c1-cef16221a3fd",
+            "event_timestamp": "2026-09-22T11:49:00.88074Z",
+            "role": "contributing"
+          },
+          {
+            "event_id": "01a0c8f2-a7ea-70a5-b5a1-a5af42c9641d",
+            "event_timestamp": "2026-09-22T11:49:01.034042Z",
+            "role": "trigger"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      {
+        "id": 1,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.639664Z",
+        "author": "assistant-demo",
+        "body": "Three rejected logins for labuser from 127.208.20.12 (source ports 40929, 40121, 42687), then an accepted login from port 58215, all within 0.5 s. SSH was in test-credentials mode, so the rejections were real wrong passwords and the success used the configured lab account. After login the session ran one command (id). The source address belongs to the labtest run 20260922T114855Z-666cb1 (scenario ssh-guess-then-success)."
+      },
+      {
+        "id": 2,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.647125Z",
+        "author": "assistant-demo",
+        "body": "Approved restriction action 2 for SSH, 15 minutes. Verification: verified (the guard counted a denylist refusal for the probe at 11:49:48Z). Tested by hand: an SSH client from 127.208.20.12 was reset before the banner (connection.denied at 11:49:49Z), while 127.208.20.99 still received the SSH banner, so the service itself was up."
+      }
+    ],
+    "history": [
+      {
+        "id": 9,
+        "case_id": 3,
+        "at": "2026-09-22T11:49:01.037477Z",
+        "actor": "correlator",
+        "action": "case_created",
+        "detail": {
+          "detection_id": 5,
+          "reason": "no open case for this sensor and source within the correlation window",
+          "window": "30m0s"
+        }
+      },
+      {
+        "id": 10,
+        "case_id": 3,
+        "at": "2026-09-22T11:49:01.037477Z",
+        "actor": "correlator",
+        "action": "detection_linked",
+        "detail": {
+          "detection_id": 5,
+          "explanation": "3 rejected logins for account \"labuser\" from 127.208.20.12 to ssh, then an accepted login for the same account at 11:49:01Z. Threshold is 3 failures within 5m0s before the success.",
+          "rule_id": "HLAB-AUTH-003"
+        }
+      },
+      {
+        "id": 11,
+        "case_id": 3,
+        "at": "2026-09-22T11:49:01.040213Z",
+        "actor": "playbook",
+        "action": "response_requested",
+        "detail": {
+          "action_id": 2,
+          "playbook": "restrict-lab-source"
+        }
+      },
+      {
+        "id": 23,
+        "case_id": 3,
+        "at": "2026-09-22T11:49:48.683185Z",
+        "actor": "assistant-demo",
+        "action": "response_active",
+        "detail": {
+          "action_id": 2,
+          "from": "pending_approval"
+        }
+      },
+      {
+        "id": 24,
+        "case_id": 3,
+        "at": "2026-09-22T11:49:48.688839Z",
+        "actor": "system",
+        "action": "response_active",
+        "detail": {
+          "action_id": 2,
+          "from": "active"
+        }
+      },
+      {
+        "id": 25,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.621989Z",
+        "actor": "assistant-demo",
+        "action": "evidence_added",
+        "detail": {
+          "event_id": "01a0c8f2-a917-7322-a987-1131675b5bc7",
+          "event_timestamp": "2026-09-22T11:49:01.335205Z",
+          "note": "First command after the accepted login (id). Shows the account was used, not just authenticated."
+        }
+      },
+      {
+        "id": 26,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.632536Z",
+        "actor": "assistant-demo",
+        "action": "evidence_added",
+        "detail": {
+          "event_id": "01a0c8f3-6429-76b3-ae45-75e8829a321d",
+          "event_timestamp": "2026-09-22T11:49:49.22544Z",
+          "note": "Manual SSH attempt from the restricted source after approval, closed by the denylist."
+        }
+      },
+      {
+        "id": 27,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.639664Z",
+        "actor": "assistant-demo",
+        "action": "note_added",
+        "detail": {
+          "note_id": 1
+        }
+      },
+      {
+        "id": 28,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.647125Z",
+        "actor": "assistant-demo",
+        "action": "note_added",
+        "detail": {
+          "note_id": 2
+        }
+      },
+      {
+        "id": 29,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.653335Z",
+        "actor": "assistant-demo",
+        "action": "response_reversed",
+        "detail": {
+          "action_id": 2,
+          "from": "active"
+        }
+      },
+      {
+        "id": 30,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.662006Z",
+        "actor": "assistant-demo",
+        "action": "verdict_changed",
+        "detail": {
+          "from": "",
+          "to": "expected-test"
+        }
+      },
+      {
+        "id": 31,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.662006Z",
+        "actor": "assistant-demo",
+        "action": "response_decision_changed",
+        "detail": {
+          "from": "",
+          "to": "Restricted SSH for the source for 15 minutes, verified, then lifted after testing."
+        }
+      },
+      {
+        "id": 32,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.662006Z",
+        "actor": "assistant-demo",
+        "action": "closure_reason_changed",
+        "detail": {
+          "from": "",
+          "to": "Activity matches labtest scenario ssh-guess-then-success in run 20260922T114855Z-666cb1. Detection HLAB-AUTH-003 fired as designed; restriction and verification behaved correctly."
+        }
+      },
+      {
+        "id": 33,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.662006Z",
+        "actor": "assistant-demo",
+        "action": "status_changed",
+        "detail": {
+          "from": "new",
+          "to": "closed"
+        }
+      },
+      {
+        "id": 48,
+        "case_id": 3,
+        "at": "2026-09-22T11:50:11.7453Z",
+        "actor": "assistant-demo",
+        "action": "exported",
+        "detail": {
+          "events": 6,
+          "file": "CASE-00003-20260922T115011Z.md",
+          "format": "md",
+          "secrets_included": false
+        }
+      }
+    ],
+    "added_evidence": [
+      {
+        "event_id": "01a0c8f2-a917-7322-a987-1131675b5bc7",
+        "event_timestamp": "2026-09-22T11:49:01.335205Z",
+        "added_by": "assistant-demo",
+        "note": "First command after the accepted login (id). Shows the account was used, not just authenticated.",
+        "added_at": "2026-09-22T11:50:11.621989Z"
+      },
+      {
+        "event_id": "01a0c8f3-6429-76b3-ae45-75e8829a321d",
+        "event_timestamp": "2026-09-22T11:49:49.22544Z",
+        "added_by": "assistant-demo",
+        "note": "Manual SSH attempt from the restricted source after approval, closed by the denylist.",
+        "added_at": "2026-09-22T11:50:11.632536Z"
+      }
+    ],
+    "actions": [
+      {
+        "id": 2,
+        "case_id": 3,
+        "playbook": "restrict-lab-source",
+        "source_ip": "127.208.20.12",
+        "sensor_id": "lab-sensor-01",
+        "services": [
+          "ssh"
+        ],
+        "state": "reversed",
+        "summary": "When this was requested, CASE-00003 had 1 detection(s), severity high, for 127.208.20.12 on sensor lab-sensor-01 between 2026-09-22T11:49:00Z and 2026-09-22T11:49:01Z. Services involved: ssh. Approving adds 127.208.20.12 to the application denylist so new connections to the selected decoys are closed. It does not change the host firewall or end sessions that are already open.",
+        "requested_at": "2026-09-22T11:49:01.040213Z",
+        "decided_at": "2026-09-22T11:49:48.683185Z",
+        "decided_by": "assistant-demo",
+        "expires_at": "2026-09-22T12:04:48.683172Z",
+        "ended_at": "2026-09-22T11:50:11.653335Z",
+        "verification": {
+          "checked_at": "2026-09-22T11:49:48.688424175Z",
+          "checks": [
+            {
+              "denylist_check": true,
+              "probe": {
+                "detail": "closed before any data, and the guard counted a denylist refusal",
+                "outcome": "denied",
+                "service": "ssh",
+                "target": "127.0.0.1:2222"
+              },
+              "reason": "a live connection was refused by the denylist",
+              "result": "verified",
+              "service": "ssh"
+            }
+          ],
+          "passed": true,
+          "status": "verified"
+        }
+      }
+    ],
+    "observables": [
+      {
+        "id": 36,
+        "type": "ipv4",
+        "value": "127.208.20.12",
+        "original_value": "127.208.20.12",
+        "first_seen": "2026-09-22T11:49:00.570776Z",
+        "last_seen": "2026-09-22T11:49:49.22544Z",
+        "sight_count": 16,
+        "confidence": 0,
+        "source": "honeypot:ssh",
+        "tags": [
+          "role:source"
+        ],
+        "status": "observed",
+        "internal": true,
+        "claimed": false
+      },
+      {
+        "id": 3,
+        "type": "ssh-client",
+        "value": "SSH-2.0-hlab-labtest",
+        "original_value": "SSH-2.0-hlab-labtest",
+        "first_seen": "2026-09-22T11:48:55.668937Z",
+        "last_seen": "2026-09-22T11:49:13.179505Z",
+        "sight_count": 13,
+        "confidence": 0,
+        "source": "honeypot:ssh",
+        "tags": [
+          "claimed-fingerprint"
+        ],
+        "status": "observed",
+        "internal": false,
+        "claimed": true
+      }
+    ],
+    "timeline": [
+      {
+        "id": "01a0c8f2-a61c-7671-be90-c6988d48a4f0",
+        "session_id": "01a0c8f2-a61a-7047-8518-871bdf64467e",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:00.572422Z",
+        "received_at": "2026-09-22T11:49:00.573647Z",
+        "service_type": "ssh",
+        "event_type": "login.failed",
+        "source_ip": "127.208.20.12",
+        "source_port": 40929,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "auth_method": "password",
+          "auth_mode": "test-credentials",
+          "client_version": "SSH-2.0-hlab-labtest",
+          "password": "********",
+          "username": "labuser"
+        },
+        "seq": 28,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-a6b6-7177-859a-7798def533c2",
+        "session_id": "01a0c8f2-a6b3-71ac-93af-bc9c9282c472",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:00.726096Z",
+        "received_at": "2026-09-22T11:49:00.727338Z",
+        "service_type": "ssh",
+        "event_type": "login.failed",
+        "source_ip": "127.208.20.12",
+        "source_port": 40121,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "auth_method": "password",
+          "auth_mode": "test-credentials",
+          "client_version": "SSH-2.0-hlab-labtest",
+          "password": "********",
+          "username": "labuser"
+        },
+        "seq": 31,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-a750-7b4b-a5c1-cef16221a3fd",
+        "session_id": "01a0c8f2-a74d-7359-b18a-f152e851da6b",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:00.88074Z",
+        "received_at": "2026-09-22T11:49:00.881718Z",
+        "service_type": "ssh",
+        "event_type": "login.failed",
+        "source_ip": "127.208.20.12",
+        "source_port": 42687,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "auth_method": "password",
+          "auth_mode": "test-credentials",
+          "client_version": "SSH-2.0-hlab-labtest",
+          "password": "********",
+          "username": "labuser"
+        },
+        "seq": 34,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-a7ea-70a5-b5a1-a5af42c9641d",
+        "session_id": "01a0c8f2-a7e7-7585-967b-38bf5322f396",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:01.034042Z",
+        "received_at": "2026-09-22T11:49:01.035366Z",
+        "service_type": "ssh",
+        "event_type": "login.success",
+        "source_ip": "127.208.20.12",
+        "source_port": 58215,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "auth_method": "password",
+          "auth_mode": "test-credentials",
+          "client_version": "SSH-2.0-hlab-labtest",
+          "password": "********",
+          "username": "labuser"
+        },
+        "seq": 37,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-a917-7322-a987-1131675b5bc7",
+        "session_id": "01a0c8f2-a7e7-7585-967b-38bf5322f396",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:01.335205Z",
+        "received_at": "2026-09-22T11:49:01.33523Z",
+        "service_type": "ssh",
+        "event_type": "command.input",
+        "source_ip": "127.208.20.12",
+        "source_port": 58215,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "command": "id",
+          "hostname": "web-prod-03"
+        },
+        "seq": 38,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f3-6429-76b3-ae45-75e8829a321d",
+        "session_id": "denied-01a0c8f3-6429-76b7-a3e3-361746c4cb27",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:49.22544Z",
+        "received_at": "2026-09-22T11:49:49.225453Z",
+        "service_type": "ssh",
+        "event_type": "connection.denied",
+        "source_ip": "127.208.20.12",
+        "source_port": 34297,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "reason": "application denylist"
+        },
+        "seq": 94,
+        "origin": "lab"
+      }
+    ],
+    "timeline_total": 6,
+    "secrets_masked": true,
+    "action_history": {
+      "2": [
+        {
+          "id": 2,
+          "action_id": 2,
+          "at": "2026-09-22T11:49:01.040213Z",
+          "actor": "playbook",
+          "from_state": "",
+          "to_state": "pending_approval",
+          "detail": {
+            "case_id": 3,
+            "summary": "When this was requested, CASE-00003 had 1 detection(s), severity high, for 127.208.20.12 on sensor lab-sensor-01 between 2026-09-22T11:49:00Z and 2026-09-22T11:49:01Z. Services involved: ssh. Approving adds 127.208.20.12 to the application denylist so new connections to the selected decoys are closed. It does not change the host firewall or end sessions that are already open."
+          }
+        },
+        {
+          "id": 4,
+          "action_id": 2,
+          "at": "2026-09-22T11:49:48.683185Z",
+          "actor": "assistant-demo",
+          "from_state": "pending_approval",
+          "to_state": "active",
+          "detail": {
+            "expires_at": "2026-09-22T12:04:48.683172016Z",
+            "services": [
+              "ssh"
+            ]
+          }
+        },
+        {
+          "id": 5,
+          "action_id": 2,
+          "at": "2026-09-22T11:49:48.688839Z",
+          "actor": "system",
+          "from_state": "active",
+          "to_state": "active",
+          "detail": {
+            "verification": "verified"
+          }
+        },
+        {
+          "id": 6,
+          "action_id": 2,
+          "at": "2026-09-22T11:50:11.653335Z",
+          "actor": "assistant-demo",
+          "from_state": "active",
+          "to_state": "reversed",
+          "detail": {
+            "reason": "Source confirmed as the labtest scenario; block tested and no longer needed."
+          }
+        }
+      ]
+    }
+  },
+  "complete": true,
+  "counts": {
+    "actions": 1,
+    "detections": 1,
+    "events": 6,
+    "history": 15,
+    "notes": 2,
+    "observables": 2
+  },
+  "exported_at": "2026-09-22T11:50:11.753743781Z",
+  "exported_by": "assistant-demo",
+  "generator": "Honeypot SOC Investigation Lab",
+  "secrets_masked": true
+}

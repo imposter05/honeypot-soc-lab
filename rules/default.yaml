@@ -1,0 +1,332 @@
+# Hiten | 2026
+# default.yaml
+#
+# Default detection rules. Thresholds are starting values chosen for
+# a lab; they are not industry standards. Change them here or point
+# detection.rules_file at your own copy, then rerun the rule tests
+# (go test ./internal/detection/) and the lab scenarios.
+#
+# Confidence says how specific the behaviour is. It is not a
+# probability and nothing here was measured against real traffic.
+
+rules:
+  - id: HLAB-AUTH-001
+    version: 1
+    name: Repeated authentication
+    kind: auth_volume
+    enabled: true
+    severity: medium
+    confidence: medium
+    confidence_rationale: >
+      Five logins in five minutes from one address to one service is
+      unusual for a person typing, but scripts, password managers and
+      monitoring checks can do the same.
+    description: >
+      Counts every authentication attempt (accepted or rejected) from
+      one source to one service on one sensor.
+    rationale: >
+      Volume alone says a client is logging in repeatedly. In the
+      default accept-all SSH mode every attempt is accepted, so this
+      rule, not the failure rules, is what fires there.
+    required_fields: [sensor_id, source_ip, service_type, event_type, timestamp]
+    params:
+      threshold: 5
+      window: 5m
+    suppress_for: 10m
+    mitre: [T1110]
+    false_positives:
+      - A lab test or monitoring script that logs in on a schedule.
+      - Several people sharing one NAT address.
+    guidance:
+      - Open the linked events and compare usernames and passwords. One
+        pair repeated suggests a script; many pairs suggests guessing.
+      - Check the auth_mode value. In accept-all mode every attempt
+        succeeds, so success here does not mean a real password was right.
+    tests:
+      positive: [auth-volume-five-in-window, auth-volume-mixed-results]
+      negative: [auth-volume-outside-window, auth-volume-split-services]
+
+  - id: HLAB-AUTH-002
+    version: 1
+    name: Failed-authentication burst
+    kind: auth_failure_burst
+    enabled: true
+    severity: medium
+    confidence: high
+    confidence_rationale: >
+      Rejected logins only happen in test-credentials mode, where the
+      accepted pairs are known, so each failure is a wrong guess.
+    description: >
+      Counts rejected logins from one source to one service.
+    rationale: >
+      Repeated wrong passwords is the plain pattern of password
+      guessing (T1110). Requires ssh.auth_mode test-credentials for SSH.
+    required_fields: [sensor_id, source_ip, service_type, event_type, timestamp]
+    params:
+      threshold: 5
+      window: 5m
+    suppress_for: 10m
+    mitre: [T1110, T1110.001]
+    false_positives:
+      - A person who forgot a password and keeps trying.
+    guidance:
+      - Look at the distinct usernames. One username points to password
+        guessing; many usernames with one password points to spraying.
+    tests:
+      positive: [failure-burst-five]
+      negative: [failure-burst-successes-only, failure-burst-four]
+
+  - id: HLAB-AUTH-003
+    version: 1
+    name: Failures followed by success
+    kind: failures_then_success
+    enabled: true
+    severity: high
+    confidence: high
+    confidence_rationale: >
+      Needs several rejected logins and then an accepted one for the
+      same account from the same source, in order.
+    description: >
+      Rejected logins for one account followed by an accepted login
+      for that account from the same source within the window.
+    rationale: >
+      The combination suggests the guessing worked, which matters more
+      than the guessing alone.
+    required_fields: [sensor_id, source_ip, service_type, event_type, timestamp, service_data.username]
+    params:
+      threshold: 3
+      window: 5m
+    suppress_for: 30m
+    mitre: [T1110.001, T1078]
+    false_positives:
+      - A user mistyping a password a few times and then getting it right.
+    guidance:
+      - Check what the session did after the successful login.
+      - In the lab, confirm the accepted pair is one of ssh.test_credentials.
+    tests:
+      positive: [fts-three-failures-then-success]
+      negative: [fts-different-account, fts-expired-window, fts-success-first]
+
+  - id: HLAB-HTTP-001
+    version: 1
+    name: Sensitive HTTP path probing
+    kind: http_sensitive_paths
+    enabled: true
+    severity: medium
+    confidence: medium
+    confidence_rationale: >
+      Normal visitors rarely ask for several configuration and admin
+      paths in a minute. Crawlers and uptime checks sometimes do.
+    description: >
+      Counts distinct requests to configured sensitive paths from one
+      source. Paths ending in / match anything under them.
+    rationale: >
+      Asking for .env, .git/config, wp-config.php and admin panels in
+      quick succession is typical of wordlist scanning.
+    required_fields: [sensor_id, source_ip, service_type, event_type, service_data.path]
+    params:
+      threshold: 3
+      window: 1m
+      paths:
+        - /.env
+        - /.git/config
+        - /.git/head
+        - /wp-config.php
+        - /wp-config.php.bak
+        - /config.php
+        - /.aws/credentials
+        - /server-status
+        - /wp-login.php
+        - /xmlrpc.php
+        - /phpmyadmin/
+        - /pma/
+        - /wp-admin/
+    suppress_for: 10m
+    mitre: [T1595.003]
+    false_positives:
+      - A site owner checking their own admin pages.
+      - Security scanners run by the owner of the address.
+    guidance:
+      - List the paths and response codes. Only 200 responses returned content.
+      - Check the User-Agent, remembering it can be set to anything.
+    tests:
+      positive: [http-three-sensitive-paths]
+      negative: [http-ordinary-browsing, http-same-path-repeated, http-paths-outside-window]
+
+  - id: HLAB-NET-001
+    version: 1
+    name: Multiple decoy services contacted
+    kind: multi_service_contact
+    enabled: true
+    severity: medium
+    confidence: medium
+    confidence_rationale: >
+      Nothing legitimate should talk to several decoys. Port scans and
+      a lab tester both do.
+    description: >
+      Counts distinct decoy services one source connected to (or sent
+      an HTTP request to) on one sensor.
+    rationale: >
+      Touching several unrelated services in a short time is what
+      service discovery looks like from the target side (T1046).
+    required_fields: [sensor_id, source_ip, service_type, event_type, timestamp]
+    params:
+      threshold: 3
+      window: 1m
+    suppress_for: 10m
+    mitre: [T1046]
+    false_positives:
+      - An administrator testing each decoy after setup.
+    guidance:
+      - Compare timing. A scanner touches ports seconds apart; a person
+        is slower.
+      - Check whether any service received more than a connection.
+    tests:
+      positive: [multi-service-three]
+      negative: [multi-service-one-repeated, multi-service-outside-window]
+
+  - id: HLAB-SSH-001
+    version: 1
+    name: Discovery command sequence
+    kind: discovery_sequence
+    enabled: true
+    severity: low
+    confidence: medium
+    confidence_rationale: >
+      Each command is routine on its own. Several different ones in a
+      fresh session on an unknown host is more telling.
+    description: >
+      Counts distinct system, user and network discovery commands in
+      one SSH session. Commands are parsed; text that only mentions a
+      command name does not count.
+    rationale: >
+      Intruders usually check who they are, what the host is and what
+      network it sits on before doing anything else (T1082, T1016).
+    required_fields: [session_id, service_type, event_type, service_data.command]
+    params:
+      threshold: 3
+      window: 10m
+      commands: [uname, hostname, whoami, id, w, who, last, ps, ifconfig, ip, netstat, ss, arp, route, lscpu, lsblk, free, df, uptime, nproc]
+      file_reads: [/etc/passwd, /etc/shadow, /etc/os-release, /etc/issue, /proc/cpuinfo, /proc/meminfo, /proc/version]
+    suppress_for: 30m
+    mitre: [T1082, T1016]
+    false_positives:
+      - An administrator doing a health check.
+    guidance:
+      - Replay the session to see the order and what came next.
+    tests:
+      positive: [discovery-three-distinct, discovery-in-one-line]
+      negative: [discovery-single-command, discovery-mentions-only, discovery-other-session]
+
+  - id: HLAB-SSH-002
+    version: 1
+    name: Transfer command attempt
+    kind: transfer_command
+    enabled: true
+    severity: high
+    confidence: high
+    confidence_rationale: >
+      The command name and a URL or host/path argument are both parsed
+      from the command line, so mentions inside echo or comments do
+      not match.
+    description: >
+      A download tool was run with a URL or host/path argument.
+    rationale: >
+      Fetching tools is a common next step after access (T1105). The
+      fake shell does not make the request, so this is an attempt.
+    required_fields: [session_id, service_type, event_type, service_data.command]
+    params:
+      commands: [curl, wget, tftp, fetch, lwp-download, ftpget]
+    suppress_for: 30m
+    mitre: [T1105]
+    false_positives:
+      - An administrator downloading a package by hand.
+    guidance:
+      - The URL and domain are extracted as observables. Check them in
+        the Observables view before deciding anything about them.
+      - Do not visit the URL from your own machine.
+    tests:
+      positive: [transfer-wget-url, transfer-curl-in-pipeline]
+      negative: [transfer-echo-mentions-curl, transfer-curl-no-target]
+
+  - id: HLAB-REDIS-001
+    version: 1
+    name: Redis configuration write attempt
+    kind: redis_config_write
+    enabled: true
+    severity: high
+    confidence: high
+    confidence_rationale: >
+      These commands change where Redis writes files or who it
+      replicates from. Clients of a cache have no reason to send them.
+    description: >
+      CONFIG SET, SLAVEOF, REPLICAOF or MODULE sent to the Redis decoy.
+    rationale: >
+      Changing dir and dbfilename is a known way to write SSH keys or
+      cron files through an exposed Redis.
+    required_fields: [sensor_id, source_ip, service_type, event_type, service_data.command]
+    params:
+      commands: ["CONFIG SET", SLAVEOF, REPLICAOF, MODULE]
+    suppress_for: 30m
+    mitre: []
+    false_positives:
+      - None known for a decoy nobody legitimately uses.
+    guidance:
+      - Read the raw command to see the directory or file it tried to set.
+    tests:
+      positive: [redis-config-set]
+      negative: [redis-get-command]
+
+  - id: HLAB-SSH-003
+    version: 1
+    name: SSH port-forward request
+    kind: ssh_port_forward
+    enabled: true
+    severity: medium
+    confidence: high
+    confidence_rationale: >
+      The client explicitly asked for a direct-tcpip channel.
+    description: >
+      The SSH client asked the decoy to open a TCP connection onward.
+    rationale: >
+      Forwarding through a compromised host hides the real source
+      (T1572). This alone does not show lateral movement, because the
+      request was refused and nothing connected.
+    required_fields: [session_id, service_type, service_data.channel_type]
+    params: {}
+    suppress_for: 30m
+    mitre: [T1572]
+    false_positives:
+      - An SSH client configured with a default LocalForward.
+    guidance:
+      - Check the requested target in matched values.
+    tests:
+      positive: [port-forward-request]
+      negative: [port-forward-session-channel]
+
+  - id: HLAB-HTTP-002
+    version: 1
+    name: Scanner User-Agent claimed
+    kind: scanner_user_agent
+    enabled: true
+    severity: low
+    confidence: low
+    confidence_rationale: >
+      The User-Agent header is set by the client and can claim to be
+      anything.
+    description: >
+      An HTTP request carried a User-Agent that matches a known
+      scanning tool.
+    rationale: >
+      Useful context when combined with path probing. Weak on its own.
+    required_fields: [sensor_id, source_ip, event_type, service_data.scanner]
+    params: {}
+    suppress_for: 30m
+    mitre: [T1595.002]
+    false_positives:
+      - Anyone can send this header, including a curl command with -A.
+    guidance:
+      - Treat as a label, not as identification of the tool.
+    tests:
+      positive: [scanner-ua-nikto]
+      negative: [scanner-ua-browser]

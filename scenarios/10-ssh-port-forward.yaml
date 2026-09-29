@@ -1,0 +1,9 @@
+id: ssh-port-forward
+description: Ask the SSH decoy to forward a connection to an internal RDP port.
+# Uses the lab account from config.example.yaml so it works in both SSH auth modes.
+kind: attack
+steps:
+  - ssh_forward: {user: labuser, password: lab-password-1, target: "10.0.0.5:3389"}
+expect:
+  detections: [HLAB-SSH-003]
+  min_events: 2

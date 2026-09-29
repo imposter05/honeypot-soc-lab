@@ -1,0 +1,9 @@
+id: service-sweep
+description: Open and close a TCP connection to five decoys, like a port scan.
+kind: attack
+steps:
+  - touch:
+      services: [ssh, ftp, smb, mysql, redis]
+expect:
+  detections: [HLAB-NET-001]
+  min_events: 5

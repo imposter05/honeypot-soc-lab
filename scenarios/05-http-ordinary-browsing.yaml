@@ -1,0 +1,13 @@
+id: http-ordinary-browsing
+description: Normal page loads. Nothing should be detected.
+kind: benign
+steps:
+  - http:
+      requests:
+        - {path: /, user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"}
+        - {path: /robots.txt, user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"}
+        - {path: /about, user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"}
+        - {path: /favicon.ico, user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"}
+expect:
+  no_detections: true
+  min_events: 4

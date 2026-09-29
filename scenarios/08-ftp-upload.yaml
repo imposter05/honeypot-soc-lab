@@ -1,0 +1,10 @@
+id: ftp-upload
+description: >
+  Upload a small generated file over passive FTP. The runner computes
+  the SHA-256 and checks the lab recorded the same hash.
+kind: attack
+steps:
+  - ftp_upload: {user: anonymous, password: lab@example.test, filename: notes.txt, size: 4096}
+expect:
+  upload_hash: true
+  min_events: 5

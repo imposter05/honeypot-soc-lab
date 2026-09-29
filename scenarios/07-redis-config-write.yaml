@@ -1,0 +1,12 @@
+id: redis-config-write
+description: Try to point Redis at /root/.ssh, a known way to plant SSH keys.
+kind: attack
+steps:
+  - redis:
+      commands:
+        - [PING]
+        - [CONFIG, SET, dir, /root/.ssh]
+        - [CONFIG, SET, dbfilename, authorized_keys]
+expect:
+  detections: [HLAB-REDIS-001]
+  min_events: 3

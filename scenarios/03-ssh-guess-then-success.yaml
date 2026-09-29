@@ -1,0 +1,20 @@
+id: ssh-guess-then-success
+description: >
+  Three wrong passwords for labuser, then the right one. Needs
+  test-credentials mode with labuser / lab-password-1 configured.
+kind: attack
+requires:
+  ssh_auth_mode: test-credentials
+steps:
+  - ssh_logins:
+      attempts:
+        - {user: labuser, password: wrong1}
+        - {user: labuser, password: wrong2}
+        - {user: labuser, password: wrong3}
+  - ssh:
+      user: labuser
+      password: lab-password-1
+      commands: [id]
+expect:
+  detections: [HLAB-AUTH-003]
+  min_events: 4

@@ -1,0 +1,313 @@
+{
+  "api": "http://127.0.0.1:8000",
+  "results": [
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "ssh-discovery-download",
+      "kind": "attack",
+      "source_ip": "127.208.20.10",
+      "started_at": "2026-09-22T11:48:55.663232924Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": [
+          "HLAB-SSH-001",
+          "HLAB-SSH-002"
+        ],
+        "forbidden": [
+          "HLAB-AUTH-002",
+          "HLAB-AUTH-003"
+        ],
+        "min_events": 7,
+        "no_detections": false,
+        "observables": [
+          {
+            "type": "url",
+            "value": "http://payload.example.test/stage.sh"
+          },
+          {
+            "type": "domain",
+            "value": "payload.example.test"
+          }
+        ]
+      },
+      "observed": {
+        "events": 8,
+        "observables": [
+          "url:http://payload.example.test/stage.sh",
+          "domain:payload.example.test"
+        ],
+        "rules": [
+          "HLAB-SSH-001",
+          "HLAB-SSH-002"
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "ssh-password-guessing",
+      "kind": "attack",
+      "source_ip": "127.208.20.11",
+      "started_at": "2026-09-22T11:48:58.437482933Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": [
+          "HLAB-AUTH-001",
+          "HLAB-AUTH-002"
+        ],
+        "forbidden": [
+          "HLAB-AUTH-003"
+        ],
+        "min_events": 6,
+        "no_detections": false,
+        "observables": null
+      },
+      "observed": {
+        "events": 18,
+        "observables": null,
+        "rules": [
+          "HLAB-AUTH-001",
+          "HLAB-AUTH-002"
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "ssh-guess-then-success",
+      "kind": "attack",
+      "source_ip": "127.208.20.12",
+      "started_at": "2026-09-22T11:49:00.569846877Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": [
+          "HLAB-AUTH-003"
+        ],
+        "forbidden": null,
+        "min_events": 4,
+        "no_detections": false,
+        "observables": null
+      },
+      "observed": {
+        "events": 14,
+        "observables": null,
+        "rules": [
+          "HLAB-AUTH-003"
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "http-sensitive-paths",
+      "kind": "attack",
+      "source_ip": "127.208.20.13",
+      "started_at": "2026-09-22T11:49:03.045323233Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": [
+          "HLAB-HTTP-001",
+          "HLAB-HTTP-002"
+        ],
+        "forbidden": null,
+        "min_events": 4,
+        "no_detections": false,
+        "observables": null
+      },
+      "observed": {
+        "events": 8,
+        "observables": null,
+        "rules": [
+          "HLAB-HTTP-001",
+          "HLAB-HTTP-002"
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "http-ordinary-browsing",
+      "kind": "benign",
+      "source_ip": "127.208.20.14",
+      "started_at": "2026-09-22T11:49:04.664612196Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": null,
+        "forbidden": null,
+        "min_events": 4,
+        "no_detections": true,
+        "observables": null
+      },
+      "observed": {
+        "events": 4,
+        "observables": null,
+        "rules": null
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "service-sweep",
+      "kind": "attack",
+      "source_ip": "127.208.20.15",
+      "started_at": "2026-09-22T11:49:06.283762605Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": [
+          "HLAB-NET-001"
+        ],
+        "forbidden": null,
+        "min_events": 5,
+        "no_detections": false,
+        "observables": null
+      },
+      "observed": {
+        "events": 9,
+        "observables": null,
+        "rules": [
+          "HLAB-NET-001"
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "redis-config-write",
+      "kind": "attack",
+      "source_ip": "127.208.20.16",
+      "started_at": "2026-09-22T11:49:07.993723913Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": [
+          "HLAB-REDIS-001"
+        ],
+        "forbidden": null,
+        "min_events": 3,
+        "no_detections": false,
+        "observables": null
+      },
+      "observed": {
+        "events": 7,
+        "observables": null,
+        "rules": [
+          "HLAB-REDIS-001"
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "ftp-upload",
+      "kind": "attack",
+      "source_ip": "127.208.20.17",
+      "started_at": "2026-09-22T11:49:09.201625918Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": null,
+        "forbidden": null,
+        "min_events": 5,
+        "no_detections": false,
+        "observables": null
+      },
+      "observed": {
+        "events": 10,
+        "observables": [
+          "sha256:b21d16ea5fb24510eec5ff151f635a5e31f67de01f4ae6f45e0f55f11de01fbe"
+        ],
+        "rules": null,
+        "upload_sha256": "b21d16ea5fb24510eec5ff151f635a5e31f67de01f4ae6f45e0f55f11de01fbe"
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "ssh-admin-routine",
+      "kind": "benign",
+      "source_ip": "127.208.20.18",
+      "started_at": "2026-09-22T11:49:10.410727922Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": null,
+        "forbidden": null,
+        "min_events": 5,
+        "no_detections": true,
+        "observables": null
+      },
+      "observed": {
+        "events": 8,
+        "observables": null,
+        "rules": null
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "ssh-port-forward",
+      "kind": "attack",
+      "source_ip": "127.208.20.19",
+      "started_at": "2026-09-22T11:49:13.176507687Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": [
+          "HLAB-SSH-003"
+        ],
+        "forbidden": null,
+        "min_events": 2,
+        "no_detections": false,
+        "observables": null
+      },
+      "observed": {
+        "events": 4,
+        "observables": null,
+        "rules": [
+          "HLAB-SSH-003"
+        ]
+      }
+    },
+    {
+      "id": 0,
+      "run_id": "20260922T114855Z-666cb1",
+      "scenario_id": "mysql-probe",
+      "kind": "benign",
+      "source_ip": "127.208.20.20",
+      "started_at": "2026-09-22T11:49:14.386426432Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "passed": true,
+      "skipped": false,
+      "expected": {
+        "detections": null,
+        "forbidden": null,
+        "min_events": 1,
+        "no_detections": true,
+        "observables": null
+      },
+      "observed": {
+        "events": 2,
+        "observables": null,
+        "rules": null
+      }
+    }
+  ],
+  "run_id": "20260922T114855Z-666cb1"
+}

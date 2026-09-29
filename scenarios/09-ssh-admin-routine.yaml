@@ -1,0 +1,14 @@
+id: ssh-admin-routine
+description: >
+  A short administrative session with no discovery sequence and no
+  downloads. Only the login volume rule could fire, and it should not.
+# Uses the lab account from config.example.yaml so it works in both SSH auth modes.
+kind: benign
+steps:
+  - ssh:
+      user: labuser
+      password: lab-password-1
+      commands: [pwd, ls, "echo curl is installed", "cat notes.txt"]
+expect:
+  no_detections: true
+  min_events: 5

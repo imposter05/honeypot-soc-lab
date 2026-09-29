@@ -1,0 +1,119 @@
+# Honeypot SOC Investigation Lab - example configuration
+#
+# Copy to config.yaml and change what you need. Every value below is
+# also the built-in default, so an empty config.yaml works.
+# Relative paths are resolved from the folder this file is in.
+# Unknown keys are an error, so typos are reported at startup.
+#
+# Environment variables override this file. Run `hive doctor` to
+# check the result; `hive doctor` also lists the variable names.
+
+sensor:
+  id: lab-sensor-01          # recorded on every event
+  region: local
+
+network:
+  # Where the dashboard and API listen. It has no login, so keep it
+  # on loopback.
+  management_host: 127.0.0.1
+  # Where the six decoys listen. Loopback means only this machine
+  # can reach them. See docs/networking.md before changing it.
+  honeypot_host: 127.0.0.1
+
+paths:
+  data_dir: data
+  host_keys: data/hostkeys
+  replays: data/replays
+  uploads: data/uploads       # FTP uploads, stored as <sha256>.bin, read-only
+  exports: data/exports
+  lab_runs: data/lab-runs
+  migrations: migrations
+  frontend: frontend/dist
+
+limits:
+  max_connections_per_service: 64
+  idle_timeout: 5m
+  max_session_duration: 30m
+  max_line_bytes: 8192
+  max_upload_bytes: 10485760  # 10 MiB; longer uploads are cut and marked truncated
+  max_http_body_bytes: 65536
+  connection_rate_per_ip: 20
+  connection_burst_per_ip: 50
+
+ssh:
+  enabled: true
+  port: 2222
+  hostname: web-prod-03
+  # accept-all: every login succeeds (classic decoy behaviour).
+  # test-credentials: only the pairs below succeed, so failed-login
+  # rules (HLAB-AUTH-002, HLAB-AUTH-003) can be tested.
+  auth_mode: accept-all
+  test_credentials:
+    - username: labuser
+      password: lab-password-1
+
+http:
+  enabled: true
+  port: 8080
+
+ftp:
+  enabled: true
+  port: 2121
+  passive_host: ""            # empty = network.honeypot_host
+  passive_port_min: 30000
+  passive_port_max: 30009
+
+smb:
+  enabled: true
+  port: 4450
+
+mysql:
+  enabled: true
+  port: 3307
+
+redis:
+  enabled: true
+  port: 6380
+
+database:
+  dsn: postgres://hive:hive@127.0.0.1:5432/hive?sslmode=disable
+  pool_min: 2
+  pool_max: 10
+
+pipeline:
+  queue_size: 10000           # events waiting to be stored
+  enqueue_wait: 250ms         # how long a decoy waits for room before the event is counted as dropped
+  persist_retry: 3
+  drain_timeout: 10s          # time allowed to store queued events at shutdown
+  live_buffer: 256            # per browser tab
+
+detection:
+  rules_file: ""              # empty = built-in rules/default.yaml
+
+cases:
+  correlation_window: 30m     # detections from one source this close together share a case
+  analyst_name: analyst       # written to the case history when no X-Analyst header is sent
+
+response:
+  enabled: true
+  min_severity: high          # cases at or above this get a pending restriction request
+  default_expiry: 1h
+
+lab:
+  # Sources in these ranges are marked origin=lab.
+  source_ranges: ["127.0.0.0/8", "::1/128"]
+  scenarios_dir: scenarios
+
+api:
+  port: 8000
+  cors_origins:               # the Vite dev server
+    - http://127.0.0.1:5173
+    - http://localhost:5173
+  serve_frontend: true
+
+geoip:
+  db_path: ""                 # optional GeoLite2-City.mmdb
+
+log:
+  level: info
+  json_format: false

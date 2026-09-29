@@ -1,0 +1,61 @@
+// ©AngelaMos | 2026
+// Modified by Hiten, 2026: restyled for the light dashboard.
+// session-player.module.scss
+
+.player {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.terminal {
+  padding: 8px;
+  background: #1f2a36;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-top: 1px solid var(--rule);
+  font-size: 12.5px;
+}
+
+.btn {
+  padding: 3px 10px;
+}
+
+.speedGroup {
+  display: flex;
+  gap: 4px;
+}
+
+.speedBtn {
+  padding: 2px 8px;
+}
+
+.speedBtnActive {
+  background: var(--link);
+  border-color: var(--link);
+  color: #fff;
+}
+
+.progress {
+  flex: 1;
+  height: 4px;
+  background: var(--rule-soft);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--link);
+}
+
+.counter {
+  font-family: var(--mono);
+  color: var(--muted);
+}

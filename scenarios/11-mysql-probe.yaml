@@ -1,0 +1,8 @@
+id: mysql-probe
+description: Connect to the MySQL decoy and read its greeting. No rule targets a single probe.
+kind: benign
+steps:
+  - mysql: {}
+expect:
+  no_detections: true
+  min_events: 1

@@ -1,0 +1,94 @@
+# Hiten | 2026
+# ci.yml
+#
+# Runs on every push and pull request. No Docker: PostgreSQL is the
+# one preinstalled on GitHub's Ubuntu runners, started as a service.
+
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Start PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -c "CREATE ROLE hive LOGIN PASSWORD 'hive'"
+          sudo -u postgres psql -c "CREATE DATABASE hive_test OWNER hive"
+      - name: Formatting
+        run: test -z "$(gofmt -l cmd internal pkg rules)" || (gofmt -l cmd internal pkg rules; exit 1)
+      - name: Vet
+        run: go vet ./...
+      - name: Unit tests with the race detector
+        run: go test -race -count=1 ./...
+      - name: Database tests
+        env:
+          HIVE_DATABASE_URL: postgres://hive:hive@127.0.0.1:5432/hive_test?sslmode=disable
+          HIVE_TEST_DSN: postgres://hive:hive@127.0.0.1:5432/hive_test?sslmode=disable
+        run: |
+          go run ./cmd/hive -c config.example.yaml migrate up
+          go test -count=1 -v ./internal/store/
+
+  frontend:
+    name: Dashboard
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dashboard
+          path: frontend/dist
+
+  e2e:
+    name: End to end (scenarios against a running lab)
+    needs: [go, frontend]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/download-artifact@v4
+        with:
+          name: dashboard
+          path: frontend/dist
+      - name: Start PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -c "CREATE ROLE hive LOGIN PASSWORD 'hive'"
+          sudo -u postgres psql -c "CREATE DATABASE hive_ci OWNER hive"
+      - name: Run lab and scenarios
+        run: ./scripts/ci-e2e.sh
+      - name: Keep results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results
+          path: ci-out

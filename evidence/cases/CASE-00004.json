@@ -1,0 +1,558 @@
+{
+  "case": {
+    "case": {
+      "id": 4,
+      "ref": "CASE-00004",
+      "title": "Scanner User-Agent claimed from 127.208.20.13",
+      "status": "closed",
+      "severity": "low",
+      "verdict": "expected-test",
+      "sensor_id": "lab-sensor-01",
+      "source_ip": "127.208.20.13",
+      "first_activity": "2026-09-22T11:49:03.047256Z",
+      "last_activity": "2026-09-22T11:49:03.356711Z",
+      "created_at": "2026-09-22T11:49:03.053108Z",
+      "updated_at": "2026-09-22T11:50:11.715484Z",
+      "response_decision": "No restriction: probing only, nothing accepted beyond decoy pages.",
+      "closure_reason": "Matches labtest scenario http-sensitive-paths in run 20260922T114855Z-666cb1. Lowered to low because only decoy content was returned.",
+      "detection_count": 2,
+      "event_count": 8,
+      "session_ids": [
+        "01a0c8f2-afc5-7ece-8c34-14981d876639",
+        "01a0c8f2-b02e-76f8-9468-f457a94eb54d",
+        "01a0c8f2-b095-719f-8f5d-8c74a9e5be54",
+        "01a0c8f2-b0fc-7067-86da-890789221bd8"
+      ],
+      "services": [
+        "http"
+      ],
+      "closed_at": "2026-09-22T11:50:11.715484Z"
+    },
+    "detections": [
+      {
+        "id": 7,
+        "rule_id": "HLAB-HTTP-001",
+        "rule_version": 1,
+        "rule_name": "Sensitive HTTP path probing",
+        "severity": "medium",
+        "confidence": "medium",
+        "sensor_id": "lab-sensor-01",
+        "source_ip": "127.208.20.13",
+        "session_id": "01a0c8f2-b095-719f-8f5d-8c74a9e5be54",
+        "service_type": "http",
+        "group_key": "lab-sensor-01|127.208.20.13",
+        "first_seen": "2026-09-22T11:49:03.047256Z",
+        "last_seen": "2026-09-22T11:49:03.356698Z",
+        "detected_at": "2026-09-22T11:49:03.253838Z",
+        "explanation": "127.208.20.13 requested 3 distinct sensitive paths (/.env, /.git/config, /wp-config.php.bak) at 11:49:03Z. Threshold is 3 distinct paths within 1m0s.",
+        "matched_values": {
+          "distinct_paths": [
+            "/.env",
+            "/.git/config",
+            "/wp-config.php.bak"
+          ],
+          "requests": 3,
+          "threshold": 3,
+          "window": "1m0s"
+        },
+        "mitre": [
+          "T1595.003"
+        ],
+        "suppressed_count": 1,
+        "case_id": 4,
+        "evidence": [
+          {
+            "event_id": "01a0c8f2-afc7-73e6-bf9c-316b4c3769f8",
+            "event_timestamp": "2026-09-22T11:49:03.047256Z",
+            "role": "contributing"
+          },
+          {
+            "event_id": "01a0c8f2-b02f-7245-935d-0bd4e9de83ae",
+            "event_timestamp": "2026-09-22T11:49:03.151149Z",
+            "role": "contributing"
+          },
+          {
+            "event_id": "01a0c8f2-b095-7cc8-a21e-d6b9f74cb3ac",
+            "event_timestamp": "2026-09-22T11:49:03.253838Z",
+            "role": "trigger"
+          },
+          {
+            "event_id": "01a0c8f2-b0fc-7aa7-b0e6-6c6d2673262c",
+            "event_timestamp": "2026-09-22T11:49:03.356698Z",
+            "role": "repeat"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "rule_id": "HLAB-HTTP-002",
+        "rule_version": 1,
+        "rule_name": "Scanner User-Agent claimed",
+        "severity": "low",
+        "confidence": "low",
+        "sensor_id": "lab-sensor-01",
+        "source_ip": "127.208.20.13",
+        "session_id": "01a0c8f2-afc5-7ece-8c34-14981d876639",
+        "service_type": "http",
+        "group_key": "lab-sensor-01|127.208.20.13|nikto",
+        "first_seen": "2026-09-22T11:49:03.047263Z",
+        "last_seen": "2026-09-22T11:49:03.356711Z",
+        "detected_at": "2026-09-22T11:49:03.047263Z",
+        "explanation": "127.208.20.13 sent a User-Agent that matches the nikto scanner. The header is chosen by the client, so this is a claim, not proof of the tool used.",
+        "matched_values": {
+          "claimed": true,
+          "scanner": "nikto",
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "mitre": [
+          "T1595.002"
+        ],
+        "suppressed_count": 3,
+        "case_id": 4,
+        "evidence": [
+          {
+            "event_id": "01a0c8f2-afc7-7405-8da7-8e49d6374463",
+            "event_timestamp": "2026-09-22T11:49:03.047263Z",
+            "role": "trigger"
+          },
+          {
+            "event_id": "01a0c8f2-b02f-725a-b27c-7486b455b65b",
+            "event_timestamp": "2026-09-22T11:49:03.151154Z",
+            "role": "repeat"
+          },
+          {
+            "event_id": "01a0c8f2-b095-7cdb-ae37-1c84548a9d11",
+            "event_timestamp": "2026-09-22T11:49:03.253842Z",
+            "role": "repeat"
+          },
+          {
+            "event_id": "01a0c8f2-b0fc-7adb-a6e5-a673f8d88482",
+            "event_timestamp": "2026-09-22T11:49:03.356711Z",
+            "role": "repeat"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      {
+        "id": 4,
+        "case_id": 4,
+        "at": "2026-09-22T11:50:11.709993Z",
+        "author": "assistant-demo",
+        "body": "Four HTTP requests from 127.208.20.13 in 0.3 s: /.env (403), /.git/config (200), /wp-config.php.bak (403), /phpmyadmin/ (200). Each request claimed the Nikto User-Agent. The header is set by the client, so HLAB-HTTP-002 only shows the claim. HLAB-HTTP-001 fired on the third distinct sensitive path; /phpmyadmin/ was linked as a repeat. The 200 responses are decoy pages, not real configuration."
+      }
+    ],
+    "history": [
+      {
+        "id": 12,
+        "case_id": 4,
+        "at": "2026-09-22T11:49:03.053108Z",
+        "actor": "correlator",
+        "action": "case_created",
+        "detail": {
+          "detection_id": 6,
+          "reason": "no open case for this sensor and source within the correlation window",
+          "window": "30m0s"
+        }
+      },
+      {
+        "id": 13,
+        "case_id": 4,
+        "at": "2026-09-22T11:49:03.053108Z",
+        "actor": "correlator",
+        "action": "detection_linked",
+        "detail": {
+          "detection_id": 6,
+          "explanation": "127.208.20.13 sent a User-Agent that matches the nikto scanner. The header is chosen by the client, so this is a claim, not proof of the tool used.",
+          "rule_id": "HLAB-HTTP-002"
+        }
+      },
+      {
+        "id": 14,
+        "case_id": 4,
+        "at": "2026-09-22T11:49:03.257347Z",
+        "actor": "correlator",
+        "action": "detection_linked",
+        "detail": {
+          "detection_id": 7,
+          "explanation": "127.208.20.13 requested 3 distinct sensitive paths (/.env, /.git/config, /wp-config.php.bak) at 11:49:03Z. Threshold is 3 distinct paths within 1m0s.",
+          "rule_id": "HLAB-HTTP-001"
+        }
+      },
+      {
+        "id": 15,
+        "case_id": 4,
+        "at": "2026-09-22T11:49:03.257347Z",
+        "actor": "correlator",
+        "action": "severity_changed",
+        "detail": {
+          "because": "HLAB-HTTP-001",
+          "from": "low",
+          "to": "medium"
+        }
+      },
+      {
+        "id": 40,
+        "case_id": 4,
+        "at": "2026-09-22T11:50:11.709993Z",
+        "actor": "assistant-demo",
+        "action": "note_added",
+        "detail": {
+          "note_id": 4
+        }
+      },
+      {
+        "id": 41,
+        "case_id": 4,
+        "at": "2026-09-22T11:50:11.715484Z",
+        "actor": "assistant-demo",
+        "action": "severity_changed",
+        "detail": {
+          "from": "medium",
+          "to": "low"
+        }
+      },
+      {
+        "id": 42,
+        "case_id": 4,
+        "at": "2026-09-22T11:50:11.715484Z",
+        "actor": "assistant-demo",
+        "action": "verdict_changed",
+        "detail": {
+          "from": "",
+          "to": "expected-test"
+        }
+      },
+      {
+        "id": 43,
+        "case_id": 4,
+        "at": "2026-09-22T11:50:11.715484Z",
+        "actor": "assistant-demo",
+        "action": "response_decision_changed",
+        "detail": {
+          "from": "",
+          "to": "No restriction: probing only, nothing accepted beyond decoy pages."
+        }
+      },
+      {
+        "id": 44,
+        "case_id": 4,
+        "at": "2026-09-22T11:50:11.715484Z",
+        "actor": "assistant-demo",
+        "action": "closure_reason_changed",
+        "detail": {
+          "from": "",
+          "to": "Matches labtest scenario http-sensitive-paths in run 20260922T114855Z-666cb1. Lowered to low because only decoy content was returned."
+        }
+      },
+      {
+        "id": 45,
+        "case_id": 4,
+        "at": "2026-09-22T11:50:11.715484Z",
+        "actor": "assistant-demo",
+        "action": "status_changed",
+        "detail": {
+          "from": "new",
+          "to": "closed"
+        }
+      },
+      {
+        "id": 50,
+        "case_id": 4,
+        "at": "2026-09-22T11:50:11.762255Z",
+        "actor": "assistant-demo",
+        "action": "exported",
+        "detail": {
+          "events": 8,
+          "file": "CASE-00004-20260922T115011Z.md",
+          "format": "md",
+          "secrets_included": false
+        }
+      }
+    ],
+    "added_evidence": [],
+    "actions": null,
+    "observables": [
+      {
+        "id": 55,
+        "type": "user-agent",
+        "value": "Mozilla/5.00 (Nikto/2.1.6)",
+        "original_value": "Mozilla/5.00 (Nikto/2.1.6)",
+        "first_seen": "2026-09-22T11:49:03.047256Z",
+        "last_seen": "2026-09-22T11:49:03.356711Z",
+        "sight_count": 8,
+        "confidence": 0,
+        "source": "honeypot:http",
+        "tags": [
+          "claimed-fingerprint",
+          "client:nikto"
+        ],
+        "status": "observed",
+        "internal": false,
+        "claimed": true
+      },
+      {
+        "id": 54,
+        "type": "ipv4",
+        "value": "127.208.20.13",
+        "original_value": "127.208.20.13",
+        "first_seen": "2026-09-22T11:49:03.047256Z",
+        "last_seen": "2026-09-22T11:49:03.356711Z",
+        "sight_count": 8,
+        "confidence": 0,
+        "source": "honeypot:http",
+        "tags": [
+          "role:source"
+        ],
+        "status": "observed",
+        "internal": true,
+        "claimed": false
+      }
+    ],
+    "timeline": [
+      {
+        "id": "01a0c8f2-afc7-73e6-bf9c-316b4c3769f8",
+        "session_id": "01a0c8f2-afc5-7ece-8c34-14981d876639",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:03.047256Z",
+        "received_at": "2026-09-22T11:49:03.047316Z",
+        "service_type": "http",
+        "event_type": "request",
+        "source_ip": "127.208.20.13",
+        "source_port": 49525,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 8080,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "body": "",
+          "body_truncated": false,
+          "headers": {
+            "Accept-Encoding": "gzip",
+            "Connection": "close",
+            "User-Agent": "Mozilla/5.00 (Nikto/2.1.6)"
+          },
+          "host": "127.0.0.1:8080",
+          "method": "GET",
+          "path": "/.env",
+          "query": "",
+          "status": 403,
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "seq": 41,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-afc7-7405-8da7-8e49d6374463",
+        "session_id": "01a0c8f2-afc5-7ece-8c34-14981d876639",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:03.047263Z",
+        "received_at": "2026-09-22T11:49:03.051396Z",
+        "service_type": "http",
+        "event_type": "scan.detected",
+        "source_ip": "127.208.20.13",
+        "source_port": 49525,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 8080,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "tags": [
+          "scanner:nikto"
+        ],
+        "service_data": {
+          "path": "/.env",
+          "scanner": "nikto",
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "seq": 42,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-b02f-7245-935d-0bd4e9de83ae",
+        "session_id": "01a0c8f2-b02e-76f8-9468-f457a94eb54d",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:03.151149Z",
+        "received_at": "2026-09-22T11:49:03.151178Z",
+        "service_type": "http",
+        "event_type": "request",
+        "source_ip": "127.208.20.13",
+        "source_port": 51953,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 8080,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "body": "",
+          "body_truncated": false,
+          "headers": {
+            "Accept-Encoding": "gzip",
+            "Connection": "close",
+            "User-Agent": "Mozilla/5.00 (Nikto/2.1.6)"
+          },
+          "host": "127.0.0.1:8080",
+          "method": "GET",
+          "path": "/.git/config",
+          "query": "",
+          "status": 200,
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "seq": 43,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-b02f-725a-b27c-7486b455b65b",
+        "session_id": "01a0c8f2-b02e-76f8-9468-f457a94eb54d",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:03.151154Z",
+        "received_at": "2026-09-22T11:49:03.154062Z",
+        "service_type": "http",
+        "event_type": "scan.detected",
+        "source_ip": "127.208.20.13",
+        "source_port": 51953,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 8080,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "tags": [
+          "scanner:nikto"
+        ],
+        "service_data": {
+          "path": "/.git/config",
+          "scanner": "nikto",
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "seq": 44,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-b095-7cc8-a21e-d6b9f74cb3ac",
+        "session_id": "01a0c8f2-b095-719f-8f5d-8c74a9e5be54",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:03.253838Z",
+        "received_at": "2026-09-22T11:49:03.253882Z",
+        "service_type": "http",
+        "event_type": "request",
+        "source_ip": "127.208.20.13",
+        "source_port": 51941,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 8080,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "body": "",
+          "body_truncated": false,
+          "headers": {
+            "Accept-Encoding": "gzip",
+            "Connection": "close",
+            "User-Agent": "Mozilla/5.00 (Nikto/2.1.6)"
+          },
+          "host": "127.0.0.1:8080",
+          "method": "GET",
+          "path": "/wp-config.php.bak",
+          "query": "",
+          "status": 403,
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "seq": 45,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-b095-7cdb-ae37-1c84548a9d11",
+        "session_id": "01a0c8f2-b095-719f-8f5d-8c74a9e5be54",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:03.253842Z",
+        "received_at": "2026-09-22T11:49:03.258302Z",
+        "service_type": "http",
+        "event_type": "scan.detected",
+        "source_ip": "127.208.20.13",
+        "source_port": 51941,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 8080,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "tags": [
+          "scanner:nikto"
+        ],
+        "service_data": {
+          "path": "/wp-config.php.bak",
+          "scanner": "nikto",
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "seq": 46,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-b0fc-7aa7-b0e6-6c6d2673262c",
+        "session_id": "01a0c8f2-b0fc-7067-86da-890789221bd8",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:03.356698Z",
+        "received_at": "2026-09-22T11:49:03.356764Z",
+        "service_type": "http",
+        "event_type": "request",
+        "source_ip": "127.208.20.13",
+        "source_port": 59915,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 8080,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "service_data": {
+          "body": "",
+          "body_truncated": false,
+          "headers": {
+            "Accept-Encoding": "gzip",
+            "Connection": "close",
+            "User-Agent": "Mozilla/5.00 (Nikto/2.1.6)"
+          },
+          "host": "127.0.0.1:8080",
+          "method": "GET",
+          "path": "/phpmyadmin/",
+          "query": "",
+          "status": 200,
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "seq": 47,
+        "origin": "lab"
+      },
+      {
+        "id": "01a0c8f2-b0fc-7adb-a6e5-a673f8d88482",
+        "session_id": "01a0c8f2-b0fc-7067-86da-890789221bd8",
+        "sensor_id": "lab-sensor-01",
+        "timestamp": "2026-09-22T11:49:03.356711Z",
+        "received_at": "2026-09-22T11:49:03.360263Z",
+        "service_type": "http",
+        "event_type": "scan.detected",
+        "source_ip": "127.208.20.13",
+        "source_port": 59915,
+        "dest_ip": "127.0.0.1",
+        "dest_port": 8080,
+        "protocol": "tcp",
+        "schema_version": 1,
+        "tags": [
+          "scanner:nikto"
+        ],
+        "service_data": {
+          "path": "/phpmyadmin/",
+          "scanner": "nikto",
+          "user_agent": "Mozilla/5.00 (Nikto/2.1.6)"
+        },
+        "seq": 48,
+        "origin": "lab"
+      }
+    ],
+    "timeline_total": 8,
+    "secrets_masked": true
+  },
+  "complete": true,
+  "counts": {
+    "actions": 0,
+    "detections": 2,
+    "events": 8,
+    "history": 11,
+    "notes": 1,
+    "observables": 2
+  },
+  "exported_at": "2026-09-22T11:50:11.770656011Z",
+  "exported_by": "assistant-demo",
+  "generator": "Honeypot SOC Investigation Lab",
+  "secrets_masked": true
+}

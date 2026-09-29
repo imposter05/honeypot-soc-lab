@@ -1,0 +1,63 @@
+{
+  "type": "bundle",
+  "id": "bundle--2968e826-5e44-42b8-bcc3-b03a570fc717",
+  "objects": [
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--f6293a56-2c5b-4caa-af79-b4a80ec7b71f",
+      "created": "2026-09-22T11:50:11Z",
+      "modified": "2026-09-22T11:50:11Z",
+      "name": "Honeypot SOC Investigation Lab",
+      "identity_class": "system"
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--b5cadd91-ad4a-4b0f-b4c8-9c0f9ae24c35",
+      "created": "2026-09-22T11:48:56Z",
+      "modified": "2026-09-22T11:48:56Z",
+      "name": "url: http://payload.example.test/stage.sh",
+      "description": "Seen 1 time(s) by a local honeypot lab between 2026-09-22T11:48:56Z and 2026-09-22T11:48:56Z. Analyst status: suspicious.",
+      "indicator_types": [
+        "anomalous-activity"
+      ],
+      "pattern": "[url:value = 'http://payload.example.test/stage.sh']",
+      "pattern_type": "stix",
+      "valid_from": "2026-09-22T11:48:56Z",
+      "labels": [
+        "from:command"
+      ],
+      "created_by_ref": "identity--f6293a56-2c5b-4caa-af79-b4a80ec7b71f",
+      "x_hlab_status": "suspicious",
+      "x_hlab_sighting_count": 1,
+      "x_hlab_evidence_event_ids": [
+        "01a0c8f2-9712-7b00-b8b1-c31470388cd2"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--5ba82cdc-b622-4d15-82d1-f6e8f01b0ab4",
+      "created": "2026-09-22T11:48:56Z",
+      "modified": "2026-09-22T11:48:56Z",
+      "name": "domain: payload.example.test",
+      "description": "Seen 1 time(s) by a local honeypot lab between 2026-09-22T11:48:56Z and 2026-09-22T11:48:56Z. Analyst status: suspicious.",
+      "indicator_types": [
+        "anomalous-activity"
+      ],
+      "pattern": "[domain-name:value = 'payload.example.test']",
+      "pattern_type": "stix",
+      "valid_from": "2026-09-22T11:48:56Z",
+      "labels": [
+        "from:url"
+      ],
+      "created_by_ref": "identity--f6293a56-2c5b-4caa-af79-b4a80ec7b71f",
+      "x_hlab_status": "suspicious",
+      "x_hlab_sighting_count": 1,
+      "x_hlab_evidence_event_ids": [
+        "01a0c8f2-9712-7b00-b8b1-c31470388cd2"
+      ]
+    }
+  ]
+}

